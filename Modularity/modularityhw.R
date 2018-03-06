@@ -12,6 +12,12 @@ if (provided==TRUE){
   maxyear <- 2008
 }
 
+cleanprecip <- na.omit(precip)
+cleantemp <- na.omit(temp)
+
+remove(precip)
+remove(temp)
+
 test <- aggregate(temp$year, by <- list(temp$name), FUN=length)
 
 ex <- aggregate(precip$name, by <- list(precip$year='1950'), FUN=max)
