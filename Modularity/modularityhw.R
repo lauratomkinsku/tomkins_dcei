@@ -1,33 +1,17 @@
 # Modularity Homework
+source('data_cleaner.R')
 
 # Data Chunk
 provided <- TRUE
 nrecods <- 40
-vars <- c('temp', 'precip')
 
 if (provided==TRUE){
   precip <- readRDS("USAAnnualPcpn1950_2008.rds")
   temp <- readRDS("USAAnnualTemp1950_2008.rds")
-  minyear <- 1950
-  maxyear <- 2008
+  startYear <- 1950
+  endYear <- 2008
 }
 
-cleanprecip <- na.omit(precip)
-cleantemp <- na.omit(temp)
+cleandat <- data_cleaner(precip,nrecords,startYear,endYear)
 
-remove(precip)
-remove(temp)
-
-test <- aggregate(temp$year, by <- list(temp$name), FUN=length)
-
-ex <- aggregate(precip$name, by <- list(precip$year='1950'), FUN=max)
-
-# Plotting
-
-maxidx <- vector()
-minidx <- vector()
-for (i in length(vars)){
-  maxidx[i] = vars[i]$year==minyear
-  minidx[i] = vars[i]$year==maxyear
-}
 
