@@ -1,33 +1,26 @@
-data_cleaner <- function(dat, nrecords, startYear, endYear){
-  cleandat <- na.omit(dat) # get rid of NaN data
-  remove(dat) # remove large dataset with NaN data
+data_cleaner <- function(dat, nrecords){
   
-  tempdat <- aggregate(cleandat$year, by <- list(cleandat$name), FUN=length) # Finds number of records per location
+  # Get unique data
+  uniquedat <- unique(dat[c('name','lat','lon')])
+  stationnames <- uniquedat$name
+  latlist <- uniquedat$lat
+  lonlist <- uniquedat$lon
+  years <- unique(dat$year)
   
-  removedat <- subset(tempdat, tempdat$x<=nrecords) # Subsets locations with less than nrecords
+  # Put data into matrix
+  cleandata <- matrix(data=dat$data,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
+  rownames(cleandata) <- stationnames
+  colnames(cleandata) <- years
   
-  # Loops through locations with not enough data and removes them from data frame
-  for (i in sequence(length(removedat$Group.1))){
-    cleandat = cleandat[cleandat$name!=removedat$Group.1[i],]
+  # Combine lat and lon in matrix
+  binddata <- cbind(uniquedat,cleandata)
+  
+  # Delete locations with lots of missing data
+  delete.na <- function(DF, a=0) {
+    DF[rowSums(is.na(DF)) <= a,]
   }
+  newdata <- delete.na(binddata, nrecords)
   
-  stationnames <- unique(cleandat$name)
-  years <- startYear:endYear
-  
-  cleandat.matrix <- matrix(nrow=length(years),ncol=length(stationnames))
-  
-  for (j in sequence(length(stationnames))){
-    intj <- subset(cleandat, cleandat$name==stationnames[j])
-    for (k in sequence(length(years))){
-      tryCatch(intk <- subset(intj, intj$year==years[k]))
-      if (length(intk$data)>0){
-        cleandat.matrix[k,j] <- intk$data
-      } else {
-        cleandat.matrix[k,j] <- NA
-      }
-    }
-  }
-  
-  
-  return(cleandat)
+  # Return data
+  return(newdata)
 }
