@@ -53,3 +53,11 @@ gg <- ggmap(conus) +
   scale_color_distiller(palette='RdBu', limits=c(-10,10),na.value='white') 
 gg
 
+first3 = cleantemp[,4:6]
+last3 = cleantemp[,(NCOL(cleantemp)-2):NCOL(cleantemp)]
+
+avg1 = rowMeans(firsthalf, na.rm=TRUE)
+avg2 = rowMeans(secondhalf, na.rm=TRUE)
+af = rowMeans(first3, na.rm=TRUE)
+al = rowMeans(last3, na.rm=TRUE)
+
