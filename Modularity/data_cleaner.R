@@ -1,19 +1,37 @@
-data_cleaner <- function(dat, nrecords){
+data_cleaner <- function(dat, nrecords,provided){
   
-  # Check if there's any janky data locations
-  datbyyear <- aggregate(dat$year, by <- list(dat$name,dat$lon,dat$lat), FUN=length)
-  years <- unique(dat$year)
-  badstations <- datbyyear$Group.1[datbyyear$x!=length(years)]
-  dat <- subset(dat, !(dat$name %in% badstations))
+  if (provided == TRUE){
+    # Check if there's any janky data locations
+    datbyyear <- aggregate(dat$year, by <- list(dat$name,dat$lon,dat$lat), FUN=length)
+    years <- unique(dat$year)
+    badstations <- datbyyear$Group.1[datbyyear$x!=length(years)]
+    dat <- subset(dat, !(dat$name %in% badstations))
+    
+    # Get unique data
+    uniquedat <- unique(dat[c('name','lat','lon')])
+    stationnames <- uniquedat$name
+    latlist <- uniquedat$lat
+    lonlist <- uniquedat$lon
+    
+    # Put data into matrix
+    cleandata <- matrix(data=dat$data,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
+  } else {
+    # Check if there's any janky data locations
+    datbyyear <- aggregate(dat$year, by <- list(dat$variable), FUN=length)
+    years <- unique(dat$year)
+    badstations <- datbyyear$Group.1[datbyyear$x!=length(years)]
+    dat <- subset(dat, !(dat$variable %in% badstations))
+    
+    # Get unique data
+    uniquedat <- unique(dat[c('name','lat','lon')])
+    stationnames <- uniquedat$name
+    latlist <- uniquedat$lat
+    lonlist <- uniquedat$lon
+    
+    # Put data into matrix
+    cleandata <- matrix(data=dat$value,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
+  }
   
-  # Get unique data
-  uniquedat <- unique(dat[c('name','lat','lon')])
-  stationnames <- uniquedat$name
-  latlist <- uniquedat$lat
-  lonlist <- uniquedat$lon
-  
-  # Put data into matrix
-  cleandata <- matrix(data=dat$data,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
   rownames(cleandata) <- stationnames
   colnames(cleandata) <- years
   

@@ -1,0 +1,102 @@
+---
+title: "Temperature and Precipitation Data"
+author: "Laura Tomkins"
+date: "March 11, 2018"
+output: html_document
+#bibliography: EVRN_assignment1.bib
+#csl: science.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
+```
+
+```{r, include = FALSE}
+# Data Chunk
+provided <- TRUE
+nrecords <- 40
+
+if (provided==TRUE){
+  precip <- readRDS("USAAnnualPcpn1950_2008.rds")
+  temp <- readRDS("USAAnnualTemp1950_2008.rds")
+} else {
+  tmep <- readRDS("USAAnnualTemp1950_2016.rds")
+  # Insert code for getting data online
+}
+```
+
+It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This is increase is largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change. [@RN1;@RN5] 
+
+```{r, include = FALSE}
+# Cleaning chunk
+source('data_cleaner.R')
+
+cleanprecip <- data_cleaner(precip,nrecords,provided)
+cleantemp <- data_cleaner(temp,nrecords,provided)
+
+remove(temp)
+remove(precip)
+```
+
+## Temperature Data
+
+My first approach is to plot the temperature data from 1950 (which is shown in Figure \ref{fig:1950temp}) and then to plot the temperature data from 2008 (\ref{fig:2008temp}) to see if there are any visual patterns which stand out and could indicate that 2008 is warmer than 1950. Looking at figures \ref{fig:1950temp} and \ref{fig:2008temp} there doesn't seem to be any strong signal either way. This is not a great method for looking at patterns in climate. To examine patterns in climate we ideally need data over multiple years as individual years aren't sufficient. For example, while we should expect 2008 to be a warmer year than 1950, this might not be the case as there are other factors besides climate change which affect the annual average temperature over the United States (ENSO, for example). 
+
+```{r, include=FALSE}
+# Plotting Chunk
+library(ggplot2)
+library(ggthemes)
+library(ggmap)
+
+conus <- get_stamenmap(c(left=-125, bottom=25.75, right=-67, top=49), zoom = 5, maptype = 'toner-lite')
+```
+
+```{r 1950temp, fig.cap = '\\label{fig:1950temp}1950 Temperature Data'}
+gg <- ggmap(conus) + 
+  geom_point(data=cleantemp, aes(x=lon,y=lat,color=`1950`),size=1,na.rm=TRUE)+
+  labs(title = '1950 Temperature Data', x = 'Longitude', y = 'Latitude') + 
+  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,60), na.value='white') 
+gg
+```
+
+```{r 2008temp, fig.cap = '\\label{fig:2008temp}2008 Temperature Data'}
+gg <- ggmap(conus) + 
+  geom_point(data=cleantemp, aes(x=lon,y=lat,color=`2008`),size=1,na.rm=TRUE)+
+  labs(title = '2008 Temperature Data', x = 'Longitude', y = 'Latitude') + 
+  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,60), na.value='white') 
+gg
+```
+
+Instead of just comparing 2 years I will compare the average of the first half of the data to the average of the second half of the data and see if any patterns emerge here.
+
+```{r}
+# Compare average of first and second half
+
+mididx = round((NCOL(cleantemp)-3)/2)
+firsthalf = cleantemp[,3:(mididx+3)]
+secondhalf = cleantemp[,(mididx+3):NCOL(cleantemp)]
+
+avg1 = rowMeans(firsthalf, na.rm=TRUE)
+avg2 = rowMeans(secondhalf, na.rm=TRUE)
+
+avgdat <- cbind(cleantemp,avg1,avg2,(avg2-avg1))
+```
+
+```{r firstavg, fig.cap = ''}
+gg <- ggmap(conus) + 
+  geom_point(data=avgdat, aes(x=lon,y=lat,color=`avg1`),size=1,na.rm=TRUE)+
+  labs(title = 'First half average', x = 'Longitude', y = 'Latitude') + 
+  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,60),na.value='white') 
+gg
+```
+
+```{r secondavg, fig.cap = ''}
+gg <- ggmap(conus) + 
+  geom_point(data=avgdat, aes(x=lon,y=lat,color=`avg2`),size=1,na.rm=TRUE)+
+  labs(title = 'Second half average', x = 'Longitude', y = 'Latitude') + 
+  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,60),na.value='white') 
+gg
+```
+
+
+
