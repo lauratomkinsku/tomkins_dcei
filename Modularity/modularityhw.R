@@ -48,8 +48,8 @@ avg2 = rowMeans(secondhalf, na.rm=TRUE)
 avgdat <- cbind(cleantemp,avg1,avg2,(avg2-avg1))
 
 gg <- ggmap(conus) + 
-  geom_point(data=avgdat, aes(x=lon,y=lat,color=`avg1`),size=1,na.rm=TRUE)+
+  geom_point(data=avgdat, aes(x=lon,y=lat,color=`(avg2 - avg1)`),size=1,na.rm=TRUE)+
   labs(title = 'First half average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,60),na.value='white') 
+  scale_color_distiller(palette='RdBu', limits=c(-10,10),na.value='white') 
 gg
 
