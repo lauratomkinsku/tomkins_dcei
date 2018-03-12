@@ -1,3 +1,13 @@
+# Title: data_cleaner
+# Author: Laura Tomkins
+# Date: March 2018
+# Purpose: inputs data and outputs cleaner version of data (for EVRN 720)
+# Inputs:   dat: raw data provided by user
+#           nreocrds: threshold for removing locations with not enough data
+#           provided: flag used to determine method for cleaning
+# outputs:  cleandata: data which is now in a matrix format with dimensions nstations x nyears
+# Example:  data_cleaner(precip, 40, TRUE)
+
 data_cleaner <- function(dat, nrecords,provided){
   
   if (provided == TRUE){

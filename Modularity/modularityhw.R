@@ -14,7 +14,7 @@ if (provided==TRUE){
 # Cleaning chunk
 source('data_cleaner.R')
 
-cleanprecip <- data_cleaner(precip,nrecords)
+cleanprecip <- data_cleaner(precip,nrecords,provided)
 cleantemp <- data_cleaner(temp,nrecords,provided)
 
 remove(temp)
@@ -61,3 +61,15 @@ avg2 = rowMeans(secondhalf, na.rm=TRUE)
 af = rowMeans(first3, na.rm=TRUE)
 al = rowMeans(last3, na.rm=TRUE)
 
+years = as.numeric(colnames(cleantemp)[4:NCOL(cleantemp)])
+avgbyyear = colMeans(cleantemp[4:NCOL(cleantemp)], na.rm=TRUE)
+plot(years, avgbyyear, main='Average Temperature for U.S.', pch=16, xlab='Years', ylab='Temperature', col='dark blue')
+lines(lowess(years,avgbyyear), col="dark red") # lowess line (x,y)
+fit <- lm(avgbyyear ~ years)
+abline(coef(fit)[1:2], col='blue')
+cf <- round(coef(fit), 2) 
+eq <- paste0("Temperature = ", cf[1],
+             ifelse(sign(cf[2])==1, " + ", " - "), abs(cf[2]), " * Year ")
+r2 <- paste0('R-squared = ',round(summary(fit)$r.squared,4))
+mtext(eq, 3, line=-2)
+mtext(r2, 3, line=-3)

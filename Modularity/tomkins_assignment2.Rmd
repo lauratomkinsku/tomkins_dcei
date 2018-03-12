@@ -25,7 +25,19 @@ if (provided==TRUE){
 }
 ```
 
-It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This is increase is largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change. [@RN1;@RN5] 
+## Introduction
+It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This is increase is largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change. [@RN1;@RN5]
+
+#### Research Questions
+
+For this assignement we will attempt to answer the following 3 questions provided from the assignment instructions:  
+1. Can we see climate warming for ourselves by analyzing these data?  
+2. In what parts of the country are temperatures getting warmer? Are there any parts that
+actually got colder over 1950-2010?  
+3. Can we say, based on these data, What change has occurred in precipitation over the period?  
+
+#### Data
+The data used in this analysis is annual temperature and precipitation data from various locations over the continental U.S. Data was either provided from the instructor or downloaded from online. It should be noted that this data hasbeen quality controlled to remove stations which have less than `r nrecords` years of data.
 
 ```{r, include = FALSE}
 # Cleaning chunk
@@ -111,6 +123,23 @@ gg <- ggmap(conus) +
   scale_color_distiller(palette='RdBu', limits=c(-15,15),na.value='white') 
 gg
 ```
+
+```{r avgplot, fig.camp = 'Figure 6. Annual average annual temperature for U.S.'}
+years = as.numeric(colnames(cleantemp)[4:NCOL(cleantemp)])
+avgbyyear = colMeans(cleantemp[4:NCOL(cleantemp)], na.rm=TRUE)
+plot(years, avgbyyear, main='Average Temperature for U.S.', pch=16, xlab='Years', ylab='Temperature', col='dark blue')
+lines(lowess(years,avgbyyear), col="dark red") # lowess line (x,y)
+fit <- lm(avgbyyear ~ years)
+abline(coef(fit)[1:2], col='blue')
+cf <- round(coef(fit), 2) 
+eq <- paste0("Temperature = ", cf[1],
+             ifelse(sign(cf[2])==1, " + ", " - "), abs(cf[2]), " * Year ")
+r2 <- paste0('R-squared = ',round(summary(fit)$r.squared,4))
+mtext(eq, 3, line=-2)
+mtext(r2, 3, line=-3)
+```
+
+Figure 6 shows a plot of the average annual temperature for the U.S. Years are shown on the x axis and average temperature on the y axis. The blue line represents the regression line with the equation and r-squared value shown at the top and the red line represents the locally weighted scatterplot smoothing (LOWESS) line. We can see that the regression line has a general positive trend, however the r-squared value is very small (r-squared = `r round(summary(fit)$r.squared,4)`)and the data do not fit this line particularly well. The LOWESS line shows a trend in the data which is more curved as there appearedto be some cooling in the U.S. during the 1970s followed by warming into the 1980s through the 2000s.
 
 <!--I've also compared the average of the first 3 years of data and the last 3 years of data which are shown below in Figure 6. 
 
