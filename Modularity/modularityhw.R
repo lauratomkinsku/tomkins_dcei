@@ -20,7 +20,7 @@ cleantemp <- data_cleaner(temp,nrecords,provided)
 remove(temp)
 remove(precip)
 
-source('data_plotter.R')
+source('data_download.R')
 data_plotter(dat=cleantemp, year=2008, colors=c('yellow','orange','red'), title='2008 Temperature')
 
 # Plotting Chunk

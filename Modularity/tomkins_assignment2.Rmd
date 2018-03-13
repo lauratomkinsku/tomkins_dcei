@@ -1,10 +1,9 @@
 ---
-title: "Temperature and Precipitation Data"
+title: "Assignment 2: Temperature and Precipitation Patterns"
 author: "Laura Tomkins"
-date: "March 11, 2018"
+date: "March 2018"
 output: html_document
-#bibliography: EVRN_assignment1.bib
-#csl: science.csl
+bibliography: EVRN_assignment2.bib
 
 # Modularity flag format: #! Modularity Lesson #X: blah blah blah
 ---
@@ -15,38 +14,39 @@ knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 
 ```{r data_setup, include = FALSE}
 # Data Chunk
-provided <- TRUE # ! Modularity Task Lesson #1: defining constants
+# ! Modularity Task Lesson #1: defining constants
+provided <- TRUE  # DO NOT CHANGE TO FALSE UNLESS YOU WANT TO SIT AROUND FOR A COUPLE HOURS
 nrecords <- 40
 
 if (provided==TRUE){
   precip <- readRDS("USAAnnualPcpn1950_2008.rds")
   temp <- readRDS("USAAnnualTemp1950_2008.rds")
 } else {
-  temp <- readRDS("USAAnnualTemp1950_2016.rds")
-  precip <- readRDS("USAAnnualPcpn1950_2008.rds")
-  # Insert code for getting data online
+  source('data_download.R')
+  data_download('19500101','20101231',state.abb)
+  temp <- readRDS("USAAnnualTemp1950_2010.rds")
 } # ! Modularity Lesson #2: extensible code (for the future easy to obtain up to date data)
 ```
 
 ## Introduction
-It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This is increase is largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change. [@RN1;@RN5]
+It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This trend has been documented as early as the 1960s [@mitchell1961recent]. This is increase is thought to be largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns [@IPCCSummaryStocker2013]. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change.
 
+
+## Methods
 #### Research Questions
-
 For this assignement we will attempt to answer the following 3 questions provided from the assignment instructions:  
 1. Can we see climate warming for ourselves by analyzing these data?  
 2. In what parts of the country are temperatures getting warmer? Are there any parts that
 actually got colder over 1950-2010?  
 3. Can we say, based on these data, What change has occurred in precipitation over the period?  
 
-#### Data
-The data used in this analysis is annual temperature and precipitation data from various locations over the continental U.S. Data was either provided from the instructor or downloaded from online. It should be noted that this data hasbeen quality controlled to remove stations which have less than `r nrecords` years of data.
+To analyze trends in the data, a regression analysis will be used to look at any general trends in the averages of the data. To analyze spatial trends in the data, plots of regression slopes for each location will be plotted to see areas which increase and areas which decrease.
 
 ```{r data_clean, include = FALSE}
 # Cleaning chunk
 source('data_cleaner.R')
 
-cleanprecip <- data_cleaner(precip,nrecords,provided)
+cleanprecip <- data_cleaner(precip,nrecords,provided=TRUE)
 cleantemp <- data_cleaner(temp,nrecords,provided)
 # ! Modularity Lesson # 6: writing scripts to avoid copying code
 # ! Modularity Lesson # 7: psuedocode (inside data_cleaner function)
@@ -55,9 +55,13 @@ remove(temp)
 remove(precip)
 ```
 
-## Temperature Data
+## Data
+The data used in this analysis is annual temperature and precipitation data from various locations over the continental U.S. Data was either provided from the instructor or downloaded from online. It should be noted that this data has been quality controlled to remove stations which have less than `r nrecords` years of data. The temperature data consists of observations from `r length(cleantemp$name)` stations and the precipitation data consists of observations from `r length(cleanprecip$name)` stations. The termperature data is fairly well distributed over the entire continental U.S. however, the precipitation data only covers 3 states which may result in some complications.
 
-My first approach is to plot the temperature data from 1950 (which is shown in Figure 1) and then to plot the temperature data from 2008 (Figure 2) to see if there are any visual patterns which stand out and could indicate that 2008 is warmer than 1950. Looking at figures 1 and 2 there doesn't seem to be any strong signal either way. This is not a great method for looking at patterns in climate. To examine patterns in climate we ideally need data over multiple years as individual years aren't sufficient. For example, while we should expect 2008 to be a warmer year than 1950, this might not be the case as there are other factors besides climate change which affect the annual average temperature over the United States (ENSO, for example). 
+## Results
+
+### Temperature
+The following is an analysis ofthe temperature data.
 
 ```{r plot_setup, include=FALSE}
 # Plotting Chunk
@@ -68,11 +72,7 @@ library(ggmap)
 conus <- get_stamenmap(c(left=-125, bottom=25.75, right=-67, top=49), zoom = 5, maptype = 'toner-lite')
 ```
 
-Instead of just comparing 2 years I will compare the average of the first half of the data to the average of the second half of the data and see if any patterns emerge here.
-
-Looking at figures 3 and 4, it appears as though the average of the second half of the data shows generally warmer temperatures, which we would expect in a warming climate. Figure 5 below shows the difference between the average of the first and second half of the data (second minus first). Positive values (red) would indicate warmer averages in the second half of the data and vice versa for negative values (blue). Here we see that the data over the map is overwhelmingly positive indicating that the second half of the data is warmer than the first half.
-
-```{r avgplot, fig.cap = 'Figure 6. Annual average annual temperature for U.S.'}
+```{r avgplot, fig.cap = 'Figure 1. Annual average annual temperature for U.S.'}
 years = as.numeric(colnames(cleantemp)[4:NCOL(cleantemp)])
 avgbyyear = colMeans(cleantemp[4:NCOL(cleantemp)], na.rm=TRUE)
 plot(years, avgbyyear, main='Average Temperature for U.S.', pch=16, xlab='Years', ylab='Temperature', col='dark blue')
@@ -87,7 +87,9 @@ mtext(eq, 3, line=-2)
 mtext(r2, 3, line=-3)
 ```
 
-```{r trendplot, fig.cap = 'Figure 7. Spatial trends for average annual temperature for U.S.'}
+```{r trendplot, fig.cap = 'Figure 2. Spatial trends for average annual temperature for U.S.'}
+# Dependencies: need to have spatial plot set up (conus) and data cleaned (cleantemp)
+#! Modularity lesson #8: be aware of dependencies
 source('data_trend.R')
 
 trends <- data_trend(cleantemp, years)
@@ -99,15 +101,15 @@ gg <- ggmap(conus) +
 gg
 ```
 
-Figure 6 shows a plot of the average annual temperature for the U.S. Years are shown on the x axis and average temperature on the y axis. The blue line represents the regression line with the equation and r-squared value shown at the top and the red line represents the locally weighted scatterplot smoothing (LOWESS) line. We can see that the regression line has a general positive trend, however the r-squared value is very small (r-squared = `r round(summary(fit)$r.squared,4)`)and the data do not fit this line particularly well. The LOWESS line shows a trend in the data which is more curved as there appearedto be some cooling in the U.S. during the 1970s followed by warming into the 1980s through the 2000s.
+Figure 1 shows a plot of the average annual temperature for the United States. Years are shown on the x axis and average temperature on the y axis. The blue line represents the regression line with the equation and r-squared value shown at the top and the red line represents the locally weighted scatterplot smoothing (LOWESS) line. We can see that the regression line has a general positive trend, however the r-squared value is very small (r-squared = `r round(summary(fit)$r.squared,4)`) and the data do not fit this line particularly well. The LOWESS line shows a trend in the data which is more curved as there appeared to be some cooling in the U.S. during the 1970s followed by warming into the 1980s through the 2000s. Because this averages temperatures for all the locations it does not account of areas where there may be cooling and areas where there may be warming, so this is not necessarily the best way to see this. We are also slightly limited because if we want to study the warming trend we should really look at temperature before the industrial revolution to get a better sense of the warming.
 
+To observe a spatial trend of the data the slope of the regression line for each station is plotted in figure 2. Here we can see a mixture of cooling (blue dots) and warming(red dots). It appears as though there is a concentration of blue dots around the southern plains/deep south region of the U.S. Most other locations appear to show warming trends.
 
+### Precipitation
 
-## Precipitation
+The next part of this analysis will focus on the change in precipitation patterns. As is stated previously, we only have precipitation data for Ohio, Tennessee, and Alabama. This present issues for making conclusions about patterns over the whole US since we don't have data for most of our area. We can only make conclusions about those states where we have data. 
 
-The next part of this analysis will focus on the change in precipitation patterns. The first thing we should notice as we look at figures 6 and 7 is that we oonly have precipitation data for Ohio, Tennessee, and Alabama. This present issues for making conclusions about patterns over the whole US since we don't have data for most of our area. We can only make conclusions about those states where we have data. 
-
-```{r avgplotp, fig.cap = 'Figure 6. Annual average annual precipitation for U.S.'}
+```{r avgplotp, fig.cap = 'Figure 3. Annual average annual precipitation for U.S.'}
 yearsp = as.numeric(colnames(cleanprecip)[4:NCOL(cleanprecip)])
 avgbyyearp = colMeans(cleanprecip[4:NCOL(cleanprecip)], na.rm=TRUE)
 plot(yearsp, avgbyyearp, main='Average Precipitation for U.S.', pch=16, xlab='Years', ylab='Precipitation', col='dark blue')
@@ -122,7 +124,7 @@ mtext(eqp, 3, line=-2)
 mtext(r2p, 3, line=-3)
 ```
 
-```{r trendplotp, fig.cap = 'Figure 7. Spatial trends for average annual temperature for U.S.'}
+```{r trendplotp, fig.cap = 'Figure 4. Spatial trends for average annual precipitation for U.S.'}
 source('data_trend.R')
 
 trendsp <- data_trend(cleanprecip, years)
@@ -130,10 +132,14 @@ trenddatp <- cbind(cleanprecip,trendsp)
 gg <- ggmap(conus) + 
   geom_point(data=trenddatp, aes(x=lon,y=lat,color=trendsp),size=1,na.rm=TRUE)+
   labs(title = 'Slope of regression for U.S. Precipitation data', x = 'Longitude', y = 'Latitude') + 
-  scale_color_distiller(palette='BrBG', direction=1,limits=c(-2,2),na.value='white') 
+  scale_color_distiller(palette='BrBG', direction=1,limits=c(-1,1),na.value='white') 
 gg
 ```
 
+Similar to figures 1 and 2, figures 3 and 4 show the same thing but for the precipitation data. Figure 3 shows a general positive trend, however the data do not fit the line very well and the r-squared value is only `r round(summary(fitp)$r.squared,4)` which is not great. Again, this is probably not very significant anyway since we only have data for 3 states.
 
-Figure 8 shows the difference between the average of the first half and second half of precipitation data. Brown indicates negative values, or areas where the precipitation has decreased for the second half of the data and blue indicates positive values, or areas where the precipitation has increased for the second half of the data. For the states where we have data we can see mostly blue values which indicates that precipitation has increased over these areas.
+Figure 4 shows the regression slope for the individual locations. Here we find that most locations show an increase in precipitation, however there are a few locations which show a decrease in precipitation.
 
+
+
+## References
