@@ -5,24 +5,27 @@ date: "March 11, 2018"
 output: html_document
 #bibliography: EVRN_assignment1.bib
 #csl: science.csl
+
+# Modularity flag format: #! Modularity Lesson #X: blah blah blah
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
 
-```{r, include = FALSE}
+```{r data_setup, include = FALSE}
 # Data Chunk
-provided <- TRUE
+provided <- TRUE # ! Modularity Task Lesson #1: defining constants
 nrecords <- 40
 
 if (provided==TRUE){
   precip <- readRDS("USAAnnualPcpn1950_2008.rds")
   temp <- readRDS("USAAnnualTemp1950_2008.rds")
 } else {
-  tmep <- readRDS("USAAnnualTemp1950_2016.rds")
+  temp <- readRDS("USAAnnualTemp1950_2016.rds")
+  precip <- readRDS("USAAnnualPcpn1950_2008.rds")
   # Insert code for getting data online
-}
+} # ! Modularity Lesson #2: extensible code (for the future easy to obtain up to date data)
 ```
 
 ## Introduction
@@ -39,12 +42,14 @@ actually got colder over 1950-2010?
 #### Data
 The data used in this analysis is annual temperature and precipitation data from various locations over the continental U.S. Data was either provided from the instructor or downloaded from online. It should be noted that this data hasbeen quality controlled to remove stations which have less than `r nrecords` years of data.
 
-```{r, include = FALSE}
+```{r data_clean, include = FALSE}
 # Cleaning chunk
 source('data_cleaner.R')
 
 cleanprecip <- data_cleaner(precip,nrecords,provided)
 cleantemp <- data_cleaner(temp,nrecords,provided)
+# ! Modularity Lesson # 6: writing scripts to avoid copying code
+# ! Modularity Lesson # 7: psuedocode (inside data_cleaner function)
 
 remove(temp)
 remove(precip)
@@ -54,7 +59,7 @@ remove(precip)
 
 My first approach is to plot the temperature data from 1950 (which is shown in Figure 1) and then to plot the temperature data from 2008 (Figure 2) to see if there are any visual patterns which stand out and could indicate that 2008 is warmer than 1950. Looking at figures 1 and 2 there doesn't seem to be any strong signal either way. This is not a great method for looking at patterns in climate. To examine patterns in climate we ideally need data over multiple years as individual years aren't sufficient. For example, while we should expect 2008 to be a warmer year than 1950, this might not be the case as there are other factors besides climate change which affect the annual average temperature over the United States (ENSO, for example). 
 
-```{r, include=FALSE}
+```{r plot_setup, include=FALSE}
 # Plotting Chunk
 library(ggplot2)
 library(ggthemes)
@@ -63,68 +68,11 @@ library(ggmap)
 conus <- get_stamenmap(c(left=-125, bottom=25.75, right=-67, top=49), zoom = 5, maptype = 'toner-lite')
 ```
 
-```{r 1950temp, fig.cap = 'Figure 1. 1950 Temperature Data'}
-gg <- ggmap(conus) + 
-  geom_point(data=cleantemp, aes(x=lon,y=lat,color=`1950`),size=1,na.rm=TRUE)+
-  labs(title = '1950 Temperature Data', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(10,80), na.value='white') 
-gg
-```
-
-```{r 2008temp, fig.cap = 'figure 2. 2008 Temperature Data'}
-gg <- ggmap(conus) + 
-  geom_point(data=cleantemp, aes(x=lon,y=lat,color=`2008`),size=1,na.rm=TRUE)+
-  labs(title = '2008 Temperature Data', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(10,80), na.value='white') 
-gg
-```
-
 Instead of just comparing 2 years I will compare the average of the first half of the data to the average of the second half of the data and see if any patterns emerge here.
-
-```{r}
-# Compare average of first and second half
-
-mididx = round((NCOL(cleantemp)-3)/2)
-firsthalf = cleantemp[,3:(mididx+3)]
-secondhalf = cleantemp[,(mididx+3):NCOL(cleantemp)]
-first3 = cleantemp[,4:6]
-last3 = cleantemp[,(NCOL(cleantemp)-2):NCOL(cleantemp)]
-
-avg1 = rowMeans(firsthalf, na.rm=TRUE)
-avg2 = rowMeans(secondhalf, na.rm=TRUE)
-af = rowMeans(first3, na.rm=TRUE)
-al = rowMeans(last3, na.rm=TRUE)
-
-avgdat <- cbind(cleantemp,avg1,avg2,(avg2-avg1),af,al,(al-af))
-```
-
-```{r firstavg, fig.cap = 'Figure 3. Average of first half of Temperature Data'}
-gg <- ggmap(conus) + 
-  geom_point(data=avgdat, aes(x=lon,y=lat,color=`avg1`),size=1,na.rm=TRUE)+
-  labs(title = 'First half average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(10,80),na.value='white') 
-gg
-```
-
-```{r secondavg, fig.cap = 'Figure 4. Average of second half of Temperature Data'}
-gg <- ggmap(conus) + 
-  geom_point(data=avgdat, aes(x=lon,y=lat,color=`avg2`),size=1,na.rm=TRUE)+
-  labs(title = 'Second half average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(10,80),na.value='white') 
-gg
-```
 
 Looking at figures 3 and 4, it appears as though the average of the second half of the data shows generally warmer temperatures, which we would expect in a warming climate. Figure 5 below shows the difference between the average of the first and second half of the data (second minus first). Positive values (red) would indicate warmer averages in the second half of the data and vice versa for negative values (blue). Here we see that the data over the map is overwhelmingly positive indicating that the second half of the data is warmer than the first half.
 
-```{r avgdiff, fig.cap = 'Figure 5. Difference between first and second half average of temperature data (second-first)'}
-gg <- ggmap(conus) + 
-  geom_point(data=avgdat, aes(x=lon,y=lat,color=`(avg2 - avg1)`),size=1,na.rm=TRUE)+
-  labs(title = 'Second half average - First half average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_distiller(palette='RdBu', limits=c(-15,15),na.value='white') 
-gg
-```
-
-```{r avgplot, fig.camp = 'Figure 6. Annual average annual temperature for U.S.'}
+```{r avgplot, fig.cap = 'Figure 6. Annual average annual temperature for U.S.'}
 years = as.numeric(colnames(cleantemp)[4:NCOL(cleantemp)])
 avgbyyear = colMeans(cleantemp[4:NCOL(cleantemp)], na.rm=TRUE)
 plot(years, avgbyyear, main='Average Temperature for U.S.', pch=16, xlab='Years', ylab='Temperature', col='dark blue')
@@ -139,63 +87,53 @@ mtext(eq, 3, line=-2)
 mtext(r2, 3, line=-3)
 ```
 
+```{r trendplot, fig.cap = 'Figure 7. Spatial trends for average annual temperature for U.S.'}
+source('data_trend.R')
+
+trends <- data_trend(cleantemp, years)
+trenddat <- cbind(cleantemp,trends)
+gg <- ggmap(conus) + 
+  geom_point(data=trenddat, aes(x=lon,y=lat,color=trends),size=1,na.rm=TRUE)+
+  labs(title = 'Slope of regression line for U.S. Temperature data', x = 'Longitude', y = 'Latitude') + 
+  scale_color_distiller(palette='RdBu', limits=c(-10,10),na.value='white') 
+gg
+```
+
 Figure 6 shows a plot of the average annual temperature for the U.S. Years are shown on the x axis and average temperature on the y axis. The blue line represents the regression line with the equation and r-squared value shown at the top and the red line represents the locally weighted scatterplot smoothing (LOWESS) line. We can see that the regression line has a general positive trend, however the r-squared value is very small (r-squared = `r round(summary(fit)$r.squared,4)`)and the data do not fit this line particularly well. The LOWESS line shows a trend in the data which is more curved as there appearedto be some cooling in the U.S. during the 1970s followed by warming into the 1980s through the 2000s.
 
-<!--I've also compared the average of the first 3 years of data and the last 3 years of data which are shown below in Figure 6. 
 
-```{r avg3, fig.cap = 'Figure 6. Difference between first 3 years and last 3 years of temperature data (last-first)'}
-gg <- ggmap(conus) + 
-  geom_point(data=avgdat, aes(x=lon,y=lat,color=`(al - af)`),size=1,na.rm=TRUE)+
-  labs(title = 'Last 3 years average - First 3 years average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_distiller(palette='RdBu', limits=c(-15,15),na.value='white') 
-gg
-``` 
--->
 
 ## Precipitation
 
 The next part of this analysis will focus on the change in precipitation patterns. The first thing we should notice as we look at figures 6 and 7 is that we oonly have precipitation data for Ohio, Tennessee, and Alabama. This present issues for making conclusions about patterns over the whole US since we don't have data for most of our area. We can only make conclusions about those states where we have data. 
 
-```{r 1950precip, fig.cap = 'Figure 6. 1950 Precipitation Data'}
+```{r avgplotp, fig.cap = 'Figure 6. Annual average annual precipitation for U.S.'}
+yearsp = as.numeric(colnames(cleanprecip)[4:NCOL(cleanprecip)])
+avgbyyearp = colMeans(cleanprecip[4:NCOL(cleanprecip)], na.rm=TRUE)
+plot(yearsp, avgbyyearp, main='Average Precipitation for U.S.', pch=16, xlab='Years', ylab='Precipitation', col='dark blue')
+lines(lowess(yearsp,avgbyyearp), col="dark red") # lowess line (x,y)
+fitp <- lm(avgbyyearp ~ yearsp)
+abline(coef(fitp)[1:2], col='blue')
+cfp <- round(coef(fitp), 2) 
+eqp <- paste0("Precipitation = ", cfp[1],
+             ifelse(sign(cfp[2])==1, " + ", " - "), abs(cfp[2]), " * Year ")
+r2p <- paste0('R-squared = ',round(summary(fit)$r.squared,4))
+mtext(eqp, 3, line=-2)
+mtext(r2p, 3, line=-3)
+```
+
+```{r trendplotp, fig.cap = 'Figure 7. Spatial trends for average annual temperature for U.S.'}
+source('data_trend.R')
+
+trendsp <- data_trend(cleanprecip, years)
+trenddatp <- cbind(cleanprecip,trendsp)
 gg <- ggmap(conus) + 
-  geom_point(data=cleanprecip, aes(x=lon,y=lat,color=`1950`),size=1,na.rm=TRUE)+
-  labs(title = '1950 Precipitation Data', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,65), na.value='white') 
+  geom_point(data=trenddatp, aes(x=lon,y=lat,color=trendsp),size=1,na.rm=TRUE)+
+  labs(title = 'Slope of regression for U.S. Precipitation data', x = 'Longitude', y = 'Latitude') + 
+  scale_color_distiller(palette='BrBG', direction=1,limits=c(-2,2),na.value='white') 
 gg
 ```
 
-```{r 2008precip, fig.cap = 'Figure 7. 2008 Precipitation Data'}
-gg <- ggmap(conus) + 
-  geom_point(data=cleanprecip, aes(x=lon,y=lat,color=`2008`),size=1,na.rm=TRUE)+
-  labs(title = '2008 Precipitation Data', x = 'Longitude', y = 'Latitude') + 
-  scale_color_gradientn(colors=rev(rainbow(7)), limits=c(20,65), na.value='white') 
-gg
-```
-
-```{r}
-# Compare average of first and second half
-
-mididxp = round((NCOL(cleanprecip)-3)/2)
-firsthalfp = cleanprecip[,3:(mididxp+3)]
-secondhalfp = cleanprecip[,(mididxp+3):NCOL(cleanprecip)]
-#first3p = cleanprecip[,4:6]
-#last3p = cleanprecip[,(NCOL(cleanprecip)-2):NCOL(cleanprecip)]
-
-avg1p = rowMeans(firsthalfp, na.rm=TRUE)
-avg2p = rowMeans(secondhalfp, na.rm=TRUE)
-#af = rowMeans(first3p, na.rm=TRUE)
-#al = rowMeans(last3p, na.rm=TRUE)
-
-avgdatp <- cbind(cleanprecip,avg1p,avg2p,(avg2p-avg1p))#,af,al,(al-af))
-```
-
-```{r avgdiffprecip, fig.cap = 'Figure 8. Difference between first and second half average of precipitation data (second-first)'}
-gg <- ggmap(conus) + 
-  geom_point(data=avgdatp, aes(x=lon,y=lat,color=`(avg2p - avg1p)`),size=1,na.rm=TRUE)+
-  labs(title = 'Second half average - First half average', x = 'Longitude', y = 'Latitude') + 
-  scale_color_distiller(palette='BrBG', direction=1, limits=c(-10,10),na.value='white') 
-gg
-```
 
 Figure 8 shows the difference between the average of the first half and second half of precipitation data. Brown indicates negative values, or areas where the precipitation has decreased for the second half of the data and blue indicates positive values, or areas where the precipitation has increased for the second half of the data. For the states where we have data we can see mostly blue values which indicates that precipitation has increased over these areas.
 
