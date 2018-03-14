@@ -23,8 +23,9 @@ if (provided==TRUE){
   temp <- readRDS("USAAnnualTemp1950_2008.rds")
 } else {
   source('data_download.R')
-  data_download('19500101','20101231',state.abb)
-  temp <- readRDS("USAAnnualTemp1950_2010.rds")
+  temp <- readRDS("USAAnnualTemp1950_2016.rds")
+  tryCatch(temp <- data_download('19500101','20101231',state.abb))
+  precip <- readRDS("USAAnnualPcpn1950_2008.rds")
 } # ! Modularity Lesson #2: extensible code (for the future easy to obtain up to date data)
 ```
 
