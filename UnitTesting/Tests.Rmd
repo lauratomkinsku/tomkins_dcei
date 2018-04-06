@@ -16,26 +16,37 @@ The main goal of this project is to explore the environmental condtions of clear
 
 The first function `get_data` will download reanalysis data from the web given desired dates for data and the general source for the data. Probable syntax: `data <- get_data(starttime, endtime, source)`. A test will be completed by checking if directory data is stored is empty or non-empty
 
-```{r get_data test}
-data <- get_data(starttime, endtime, source)
-maindir <- "data"
-subdir <- starttime
-if (dir.exists(file.path(maindir, subdir))){
-  paste0('get_data test passed')
-} else{
-  pasteo('get_data test failed')
-}
+```{python get_data test}
+import os
+startdate = '2016-05-25'
+enddate = '2016-05-27'
+date_str = startdate+'/to/'+enddate
+data_path = 'interim_'+startdate+'to'+enddate+'.nc'
+
+execfile('ei_download.py')
+
+dir_path = "C:\\Users\\Laura\\Documents\\EVRN720\\tomkins_dcei\\UnitTesting\\"
+filename = "interim_"+startdate+"to"+enddate+".nc"
+full_path = dir_path+filename
+
+if os.path.exists(full_path):
+  print('get_data test passed')
+else:
+  print('get data test failed')
+
 ```
 
 The second function will be `get_variable` which will isolate the data for a given variable. Probable syntax: `var_data <- get_variable(data_file, variable)`. A test will be completed to check that the data frame is non-empty and has data which makes sense.
 
-```{r get_variable test}
-var_data <- get_variable(data, "PRES")
-if (exists(var_data)){
-  paste0('get_variable test passed')
-} else{
-  pasteo('get_variable test failed')
-}
+```{python get_variable test}
+import get_variable as gv
+test_var = get_variable.gv(full_path, "z")
+
+if test_var in locals():
+  print('get_variable test passed')
+else:
+  print('get_variable test failed')
+
 ```
 
 The third function will be `plot_variable` which will plot the variables obtained in `get_variable`. Probable syntax: `plot <- plot_variable(variable, latitude_lims, longitude_lims)`. Most of the plots are likly to be spatial, hence the usage of latitude and longitude limits. Unsure of ways to test as present moment.
@@ -50,4 +61,7 @@ if (exits(plot)){
 ```
 
 More functions are likely to be added in the process and current functions are likely to be edited/re-designed.
+
+
+
 

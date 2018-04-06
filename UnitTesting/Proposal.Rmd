@@ -1,0 +1,20 @@
+---
+title: "Proposal"
+author: "Laura Tomkins"
+date: "April 3, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{python}
+import numpy as np
+#x = 42
+#print(x)
+#print("Hello World")
+x = np.arange(0,35,1)
+
+execfile('test.py')
+```
