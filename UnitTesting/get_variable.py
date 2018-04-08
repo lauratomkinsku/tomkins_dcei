@@ -42,7 +42,11 @@ import netCDF4 as nc
 def get_variable(filepath, varname):
     
     ncfile = nc.Dataset(filepath, 'r', format='NETCDF4')
-    varout = ncfile.variables[varname][:]
+    if varname == 'time':
+        vartemp = ncfile.variables[varname]
+        varout = nc.num2date(vartemp[:],vartemp.units,vartemp.calendar)
+    else:
+        varout = ncfile.variables[varname][:]
     ncfile.close()
     
     return varout

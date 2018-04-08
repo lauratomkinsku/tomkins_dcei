@@ -1,5 +1,5 @@
 ---
-title: "UnitTestingHW"
+title: "Proposal Tests"
 author: "Laura Tomkins"
 date: "March 2018"
 output: html_document
@@ -12,9 +12,9 @@ knitr::opts_chunk$set(cache = TRUE, echo = TRUE, include = TRUE)
 
 The main goal of this project is to explore the environmental condtions of clearing events in Stratocumulus clouds over the Southeast Atlantic Ocean. This project will download reanalysis data from online, read in this data, find the correct fields to plot, and then plot said fields. Possible variables that will be examined includes pressure, potential temperature, wind, etc. 
 
-# Top most design
+# Function testing
 
-The first function `get_data` will download reanalysis data from the web given desired dates for data and the general source for the data. Probable syntax: `data <- get_data(starttime, endtime, source)`. A test will be completed by checking if directory data is stored is empty or non-empty
+The first function `ei_download` downloads European Reanalysis Interim (ERA-Interim) data from the European Centre for Medium-Range Weather Forecats (ECMWF) given desired dates for data and the file name for where the data is to be stored. The test for this data is not very thorough, it only tests if the data file exists. Please note that the functions used in the script below are provided by the ECMWF as they have created a nice Web-API package for Python users.
 
 ```{python get_data test}
 import os
@@ -36,7 +36,7 @@ else:
 
 ```
 
-The second function will be `get_variable` which will isolate the data for a given variable. Probable syntax: `var_data <- get_variable(data_file, variable)`. A test will be completed to check that the data frame is non-empty and has data which makes sense.
+The second function will be `get_variable` which extracts a certain variable from the data file obtained from ei_download.. Probable syntax: `var_data <- get_variable(data_file, variable)`. A test will be completed to check that the data frame is non-empty and has data which makes sense.
 
 ```{python get_variable test}
 import get_variable as gv

@@ -6,7 +6,9 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+opts_chunk$set(echo = TRUE)
+opts_chunk$set('python', engine.path='C:\\Users\\Laura\\Anaconda3\\envs\\python2')
 ```
 
 ```{python}
