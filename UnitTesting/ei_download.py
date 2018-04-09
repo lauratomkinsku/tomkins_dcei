@@ -56,7 +56,7 @@ server.retrieve({
     'step'    : '12',
     'number'  : 'all', # all ensemble members
     'levtype' : 'pl', # or 'sfc'
-    'levelist': '300/500/700/600/800/850/900/950/1000',
+    'levelist': '300/500/600/700/800/850/900/950/1000',
     'date'    : date_str,
     'time'    : '00/12',
     'type'    : 'an',

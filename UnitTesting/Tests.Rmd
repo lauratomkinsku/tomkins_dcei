@@ -1,11 +1,14 @@
 ---
 title: "Proposal Tests"
 author: "Laura Tomkins"
-date: "March 2018"
-output: html_document
+date: "April 2018"
+output: pdf_document
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = TRUE, echo = TRUE, include = TRUE)
+library(reticulate)
+library(knitr)
+opts_chunk$set(cache = TRUE, echo = TRUE, include = TRUE)
+opts_chunk$set('python', engine.path='C:\\Users\\Laura\\Anaconda3\\envs\\python2')
 ```
 
 # Overview of project
@@ -18,8 +21,10 @@ The first function `ei_download` downloads European Reanalysis Interim (ERA-Inte
 
 ```{python get_data test}
 import os
-startdate = '2016-05-25'
-enddate = '2016-05-27'
+import sys
+sys.path.insert(0, "C:\\Users\\Laura\\Documents\\EVRN720\\tomkins_dcei\\UnitTesting\\")
+startdate = '2018-01-01'
+enddate = '2018-01-02'
 date_str = startdate+'/to/'+enddate
 data_path = 'interim_'+startdate+'to'+enddate+'.nc'
 
@@ -36,13 +41,26 @@ else:
 
 ```
 
-The second function will be `get_variable` which extracts a certain variable from the data file obtained from ei_download.. Probable syntax: `var_data <- get_variable(data_file, variable)`. A test will be completed to check that the data frame is non-empty and has data which makes sense.
+The second function will be `get_variable` which extracts a certain variable from the data file obtained from ei_download. The test for this function tests to seeif the variable created exists.
 
 ```{python get_variable test}
+import os
+import sys
+sys.path.insert(0, "C:\\Users\\Laura\\Documents\\EVRN720\\tomkins_dcei\\UnitTesting\\")
 import get_variable as gv
-test_var = get_variable.gv(full_path, "z")
 
-if test_var in locals():
+startdate = '2018-01-01'
+enddate = '2018-01-02'
+date_str = startdate+'/to/'+enddate
+data_path = 'interim_'+startdate+'to'+enddate+'.nc'
+
+dir_path = "C:\\Users\\Laura\\Documents\\EVRN720\\tomkins_dcei\\UnitTesting\\"
+filename = "interim_"+startdate+"to"+enddate+".nc"
+full_path = dir_path+filename
+
+test_var = gv.get_variable(full_path, "z")
+
+if 'test_var' in locals():
   print('get_variable test passed')
 else:
   print('get_variable test failed')
@@ -51,14 +69,14 @@ else:
 
 The third function will be `plot_variable` which will plot the variables obtained in `get_variable`. Probable syntax: `plot <- plot_variable(variable, latitude_lims, longitude_lims)`. Most of the plots are likly to be spatial, hence the usage of latitude and longitude limits. Unsure of ways to test as present moment.
 
-```{r plot_variable test}
+<!--```{r plot_variable test}
 plot <- plot_variable(variable, latitude_lims, longitude_lims)
 if (exits(plot)){
   paste0('plot_variable test passsed')
 } else{
   pasteo('plot_variable test failed')
 }
-```
+```-->
 
 More functions are likely to be added in the process and current functions are likely to be edited/re-designed.
 
