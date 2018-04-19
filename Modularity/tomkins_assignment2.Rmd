@@ -8,6 +8,14 @@ bibliography: EVRN_assignment2.bib
 # Modularity flag format: #! Modularity Lesson #X: blah blah blah
 ---
 
+<!--***DAN: Fine comments by searching "***DAN"-->
+
+<!--***DAN: Excellent use of git - plenty of commits, sensible commit messages, and no files committed that should not be. My one criticism is, you do not have to add the date to your commit message because date and time info is automatically stored with the commit, as is information about which files were changed and who did the commit.-->
+
+<!--***DAN: The write up is certainly sufficent for this assignment. Nice plots, esp. fig 2, which is quite smilar to what I got originally with the provided data, and better presented than my plot. Nice use of references. No problems here.-->
+
+<!--***DAN: You also did a very good job with modularity! For the most part, the code is very clean because of that! 10/10-->
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE, echo = FALSE)
 ```
@@ -30,7 +38,9 @@ if (provided==TRUE){
 ```
 
 ## Introduction
-It is fairly well accepted among the scientific community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This trend has been documented as early as the 1960s [@mitchell1961recent]. This is increase is thought to be largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns [@IPCCSummaryStocker2013]. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change.
+It is fairly well accepted among the scientific
+<!--***DAN: I think it is fair to say something considerably stronger than this! Like "very well accepted", for instance.-->
+community that the global temperatures around the globe are increasing. Temperature records have shown increasing temperatures over the past century compared to pre-industrial records. This trend has been documented as early as the 1960s [@mitchell1961recent]. This is increase is thought to be largely anthropogenic, due to the increase in greenhouse gases from burning fossil fuels. This report will attempt to use some temperature records available to show these changing temperatures. Along with global warming, increasing the concentration of CO2 also has implications for other parts of our atmosphere. Climate change will likely change our weather patterns and thus our precipitation patterns [@IPCCSummaryStocker2013]. Precipitation data is also provided in this report which will also be analyzed for evidence of climate change.
 
 
 ## Methods
@@ -43,6 +53,7 @@ actually got colder over 1950-2010?
 
 To analyze trends in the data, a regression analysis will be used to look at any general trends in the averages of the data. To analyze spatial trends in the data, plots of regression slopes for each location will be plotted to see areas which increase and areas which decrease.
 
+<!--***DAN: Great modularity here.-->
 ```{r data_clean, include = FALSE}
 # Cleaning chunk
 source('data_cleaner.R')

@@ -9,6 +9,13 @@ output:
 fontsize: 12pt
 ---
 
+<!--***DAN: to see my comments, search ***DAN in all files-->
+
+<!--***DAN The project is suitable for a final project, but I point out (you probably already recognize) it is at an early stage. You have demo'd good understanding of the concepts of unit testing, but many of your functions are not yet written. Make sure you allocate enough time to get some results of some kind for the final project. I can see this is real scientific research, and I am pleased to see you integrating the tools we have learned with your research and with your python tools you already knew.-->
+
+<!--***DAN: grade 10/10, but note all the comments I have added t your various docs.-->
+
+
 ```{r setup, include=FALSE}
 library(knitr)
 library(reticulate)
