@@ -24,7 +24,7 @@
 # Author: Laura Tomkins, M.S. Student, University of Kansas
 # email address: lauratomkins@ku.edu
 # March 2018; Last revision: March 2018
-# 
+#***DAN you are free to insert this revision info if you want, but it is not necessary if you are using gi because git tracks all that for you 
 plot_variable <- function(variable, latitude_lims, longitude_lims){
   
 }

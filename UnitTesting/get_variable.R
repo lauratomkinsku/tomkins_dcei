@@ -13,7 +13,9 @@
 #   
 # Outputs:
 #   var_data - data structure of variable specified in input [data frame] 
-#   
+#
+#***DAN: could add the format of the data frame, i.e., what columns (and names) and one row for each X.
+#
 # Example:
 #   var_data <- get_variable('data_string', 'PRES')
 #   

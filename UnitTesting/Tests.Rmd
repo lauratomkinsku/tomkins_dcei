@@ -11,6 +11,20 @@ opts_chunk$set(cache = TRUE, echo = TRUE, include = TRUE)
 opts_chunk$set('python', engine.path='C:\\Users\\Laura\\Anaconda3\\envs\\python2')
 ```
 
+<!--***DAN: to see my comments, search ***DAN in all files-->
+
+<!--***DAN You function specs are really great, super clear with very good detail. There are just a few comments inserted in some of 
+them indicating how they could be even better.-->
+
+<!--***DAN You unit tests demonstrated the basic idea of writing tests at the time of spec'ing, before writing the guts of the function,
+but they are a bit superficial, insofar as they only test things like whether a data file has been downloaded (any file will do), or 
+whether a plot has been created (any plot will do), so it would be easy for a wrong function to pass those tests. In future consider 
+more exacting tests. I know it is hard because you feel you don't know exactly what the function is supposed to do at that stage so
+it is hard to test it in an exacting way, but that is precisely the point, to get you to think through the details of what the function
+will take as arguments and what it will produce, with details precise enough here that you can write exacting tests!-->
+
+<!--***DAN You forgot to add a tag at the halfway point (use git tag halfway). Tags may be useful for your own purposes, and they are pretty simple.-->
+
 # Overview of project
 
 The main goal of this project is to explore the environmental condtions of clearing events in Stratocumulus clouds over the Southeast Atlantic Ocean. This project will download reanalysis data from online, read in this data, find the correct fields to plot, and then plot said fields. Possible variables that will be examined includes pressure, potential temperature, wind, etc. 
@@ -68,6 +82,7 @@ else:
 ```
 
 The third function will be `plot_variable` which will plot the variables obtained in `get_variable`. Probable syntax: `plot <- plot_variable(variable, latitude_lims, longitude_lims)`. Most of the plots are likly to be spatial, hence the usage of latitude and longitude limits. Unsure of ways to test as present moment.
+<!--***DAN: you could have some simple, fake data and then call the function on it and see if the expected plot is generated? You could not automate the test to the point of an if statement that says "passed" or "failed" but you could display the generated plot in your Test.Rmd output and check that it is as expected.-->
 
 <!--```{r plot_variable test}
 plot <- plot_variable(variable, latitude_lims, longitude_lims)
