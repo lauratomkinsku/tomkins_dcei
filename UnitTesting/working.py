@@ -9,8 +9,12 @@ import numpy as np
 from netCDF4 import Dataset, num2date
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
+import get_variable as gv
+
 
 ncfilename = "interim_2016-05-25to2016-05-27.nc"
+
+r = gv.get_variable(ncfilename,'r')
 ncfile = Dataset(ncfilename, 'r', format='NETCDF4') 
 #float32 longitude(longitude), float32 latitude(latitude), int32 level(level), 
 #int32 time(time), int16 z(time,level,latitude,longitude), int16 
