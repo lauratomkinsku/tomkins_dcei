@@ -1,4 +1,5 @@
-#' Add together two numbers.
+#' @title add
+#' @description Add together two numbers.
 #'
 #' @param x A real number
 #' @param y A real number

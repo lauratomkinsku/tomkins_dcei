@@ -13,10 +13,9 @@
 #   Check Package:             'Ctrl + Shift + E'
 #   Test Package:              'Ctrl + Shift + T'
 #
-#' prints hellow world
+#' Prints "Hello World"
 #'
-#' @param x A real number
-#' @param y A rea
+
 
 hello <- function() {
   print("Hello, world!")

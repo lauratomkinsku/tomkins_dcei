@@ -1,4 +1,5 @@
-#' Subtract two numbers.
+#' @title subtract
+#' @description Subtract two numbers.
 #'
 #' @param x A real number
 #' @param y A real number

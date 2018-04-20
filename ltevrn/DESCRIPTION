@@ -1,14 +1,15 @@
 Package: ltevrn
 Type: Package
-Title: What the Package Does (Title Case)
+Title: EVRN720 Packages Homework
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: person(given = "Laura",family = "Tomkins", 
+       email = lauratomkins@ku.edu, role = c("aut","cre") 
+Description: This package contains files created in the KU EVRN 720 course
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-Imports: ggplot2
-Suggests: devtools
+Imports: 
+  devtools
+Suggests:
+  roxygen2
 RoxygenNote: 6.0.1

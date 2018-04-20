@@ -7,22 +7,35 @@
 #           provided: flag used to determine method for cleaning
 # outputs:  cleandata: data which is now in a matrix format with dimensions nstations x nyears
 # Example:  data_cleaner(precip, 40, TRUE)
+#
+#' @title dataCleaner
+#' @description cleans precipitation and temperature data from Modularity Homework to easier to use format
+#'
+#' @param dat A a data frame containing the data
+#' @param nrecords An integer for threshold of minimum data observaations
+#' @param provided A logical indicating if data was provided or downloaded
+#'
+#' @return the cleaned data
+#' @examples
+#' dataCleaner(precipdata,45,TRUE)
+#' dataCleaner(tempdata, 40, FALSE)
+#'
 
-data_cleaner <- function(dat, nrecords,provided){
-  
+dataCleaner <- function(dat, nrecords,provided){
+
   if (provided == TRUE){
     # Check if there's any janky data locations
     datbyyear <- aggregate(dat$year, by <- list(dat$name,dat$lon,dat$lat), FUN=length)
     years <- unique(dat$year)
     badstations <- datbyyear$Group.1[datbyyear$x!=length(years)]
     dat <- subset(dat, !(dat$name %in% badstations))
-    
+
     # Get unique data
     uniquedat <- unique(dat[c('name','lat','lon')])
     stationnames <- uniquedat$name
     latlist <- uniquedat$lat
     lonlist <- uniquedat$lon
-    
+
     # Put data into matrix
     cleandata <- matrix(data=dat$data,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
   } else {
@@ -31,29 +44,29 @@ data_cleaner <- function(dat, nrecords,provided){
     years <- unique(dat$year)
     badstations <- datbyyear$Group.1[datbyyear$x!=length(years)]
     dat <- subset(dat, !(dat$variable %in% badstations))
-    
+
     # Get unique data
     uniquedat <- unique(dat[c('name','lat','lon')])
     stationnames <- uniquedat$name
     latlist <- uniquedat$lat
     lonlist <- uniquedat$lon
-    
+
     # Put data into matrix
     cleandata <- matrix(data=dat$value,nrow=length(stationnames),ncol=length(years),byrow=TRUE)
   }
-  
+
   rownames(cleandata) <- stationnames
   colnames(cleandata) <- years
-  
+
   # Combine lat and lon in matrix
   binddata <- cbind(uniquedat,cleandata)
-  
+
   # Delete locations with lots of missing data
   delete.na <- function(DF, a=0) {
     DF[rowSums(is.na(DF)) <= a,]
   }
   newdata <- delete.na(binddata, nrecords)
-  
+
   # Return data
   return(newdata)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/add.R
 \name{add}
 \alias{add}
-\title{Add together two numbers.}
+\title{add}
 \usage{
 add(x, y)
 }
